@@ -1,0 +1,54 @@
+---
+- name: Create non root user
+  hosts: all
+  remote_user: root
+  tasks:
+  - name: Add the user 'proxy'
+    ansible.builtin.user:
+      name: proxy
+      shell: /bin/bash
+  - name: Create .ssh directory
+    file:
+      path: /home/proxy/.ssh
+      state: directory
+      owner: proxy
+      group: proxy
+  - name: Set authorized keys for user controller
+    copy:
+      src: /root/.ssh/authorized_keys
+      remote_src: true
+      dest: /home/controller/.ssh/authorized_keys
+      owner: controller
+      group: controller
+- name: Install zenflows proxy
+  hosts: all
+  remote_user: root
+  become_user: proxy
+  become_method: su
+  tasks:
+  - name: Install package dependencies
+    ansible.builtin.package:
+      name:
+       - nginx
+       - tmux
+      state: latest
+  - name: Build app
+    command: make
+    args:
+      chdir: ..
+    delegate_to: localhost
+  - name: copy executable
+    copy:
+      dest: "/zf-proxy"
+      src: "../zf-proxy"
+      owner: proxy
+      group: proxy
+  - name: copy executable
+    copy:
+      dest: "/.env"
+      src: "../.env.production"
+      owner: proxy
+      group: proxy
+  - name: run proxy
+    # become: true
+    command: tmux new-session -d -s zenflows-proxy "source /.env && /zf-proxy"

@@ -118,7 +118,11 @@ func main() {
     for i := 0; i<len(proxiedHosts); i++{
         http.HandleFunc(proxiedHosts[i].addHandle())
     }
-    err := http.ListenAndServe(":8080", nil)
+
+    portStr := fmt.Sprintf(":%s", os.Getenv("PORT"))
+
+    fmt.Printf("Starting server on port %s\n", os.Getenv("PORT"))
+    err := http.ListenAndServe(portStr, nil)
     if errors.Is(err, http.ErrServerClosed) {
         fmt.Printf("server closed\n")
     } else if err != nil {
