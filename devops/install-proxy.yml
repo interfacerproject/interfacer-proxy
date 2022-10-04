@@ -55,7 +55,6 @@
       group: proxy
 
   - name: kill old tmux session
-    become: true
     command: tmux kill-session -t zenflows-proxy
     ignore_errors: yes
 

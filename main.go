@@ -68,7 +68,11 @@ var proxiedHosts = []ProxiedHost {
 }
 
 func getRoot(w http.ResponseWriter, r *http.Request) {
-    io.WriteString(w, "Here I'll put the list of proxied host\n")
+    var result strings.Builder
+    for _, host := range proxiedHosts {
+        fmt.Fprintf(&result, "/%s/\n", host.name)
+    }
+    io.WriteString(w, result.String())
 }
 
 func (p *ProxiedHost) proxyRequest (w http.ResponseWriter, r *http.Request) {
