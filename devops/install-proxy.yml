@@ -39,16 +39,58 @@
     delegate_to: localhost
   - name: copy executable
     copy:
-      dest: "/zf-proxy"
-      src: "../zf-proxy"
+      dest: "/interfacer-gateway"
+      src: "../interfacer-gateway"
       owner: proxy
       group: proxy
-  - name: copy executable
+
+  - name: Make service executable
+    file: dest="/interfacer-gateway" mode=a+x
+
+  - name: copy .env
     copy:
       dest: "/.env"
       src: "../.env.production"
       owner: proxy
       group: proxy
+
+  - name: kill old tmux session
+    become: true
+    command: tmux kill-session -t zenflows-proxy
+    ignore_errors: yes
+
   - name: run proxy
     # become: true
-    command: tmux new-session -d -s zenflows-proxy "source /.env && /zf-proxy"
+    command: tmux new-session -d -s zenflows-proxy "source /.env && /interfacer-gateway"
+
+  - name: Nginx service
+    blockinfile:
+      dest: "/etc/nginx/conf.d/{{ domain_name }}.conf"
+      create: true
+      block: |
+        server {
+          listen 443 ssl;
+          root /var/www/html;
+          server_name {{ domain_name }};
+          ssl_certificate /etc/letsencrypt/live/{{ domain_name}}/fullchain.pem;
+          ssl_certificate_key /etc/letsencrypt/live/{{ domain_name}}/privkey.pem;
+
+          include /etc/letsencrypt/options-ssl-nginx.conf;
+          # Redirect non-https traffic to https
+          if ($scheme != "https") {
+              return 301 https://$host$request_uri;
+          }
+          location / {
+            proxy_pass http://127.0.0.1:80/;
+          }
+        }
+
+  - name: Remove default config for nginx
+    file:
+      path: /etc/nginx/sites-enabled/default
+      state: absent
+
+  - name: Restart nginx
+    ansible.builtin.service:
+      state: reloaded
+      name: nginx
