@@ -25,6 +25,8 @@
   remote_user: root
   become_user: proxy
   become_method: su
+  vars:
+    basedir: "/interfacer-proxy"
   tasks:
   - name: Install package dependencies
     ansible.builtin.package:
@@ -37,30 +39,38 @@
     args:
       chdir: ..
     delegate_to: localhost
+
+  - name: Create project directory
+    ansible.builtin.file:
+      path: "/{{ basedir }}"
+      state: directory
+
   - name: copy executable
     copy:
-      dest: "/interfacer-gateway"
+      dest: "{{ basedir }}/interfacer-gateway"
       src: "../interfacer-gateway"
       owner: proxy
       group: proxy
 
   - name: Make service executable
-    file: dest="/interfacer-gateway" mode=a+x
-
-  - name: copy .env
-    copy:
-      dest: "/.env"
-      src: "../.env.production"
-      owner: proxy
-      group: proxy
+    file: dest="{{ basedir }}/interfacer-gateway" mode=a+x
 
   - name: kill old tmux session
-    command: tmux kill-session -t zenflows-proxy
+    command: tmux kill-session -t zenflows-proxy-{{ port }}
     ignore_errors: yes
+
+  - name: .env
+    blockinfile:
+      dest: "/{{ basedir }}/.env.{{ port }}"
+      create: true
+      block: |
+        export ZENFLOWS={{ zenflows }}
+        export HERE_API={{ here_api }}
+        export PORT={{ port }}
 
   - name: run proxy
     # become: true
-    command: tmux new-session -d -s zenflows-proxy "source /.env && /interfacer-gateway"
+    command: tmux new-session -d -s zenflows-proxy-{{ port }} "source {{ basedir }}/.env.{{ port }} && {{ basedir }}/interfacer-gateway"
 
   - name: Nginx service
     blockinfile:
@@ -80,7 +90,7 @@
               return 301 https://$host$request_uri;
           }
           location / {
-            proxy_pass http://127.0.0.1:80/;
+            proxy_pass http://127.0.0.1:{{ port }}/;
           }
         }
 
