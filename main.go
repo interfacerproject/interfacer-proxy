@@ -65,6 +65,15 @@ var proxiedHosts = []ProxiedHost {
             return currentUrl
         },
     },
+    ProxiedHost {
+        name: "inbox",
+        buildUrl: func(u *url.URL) *url.URL {
+            paths := strings.SplitN(strings.TrimPrefix(u.Path, "/"), "/", 2)
+            currentUrl, _ := url.Parse(os.Getenv("INBOX"))
+            currentUrl.Path = paths[1]
+            return currentUrl
+        },
+    },
 }
 
 func getRoot(w http.ResponseWriter, r *http.Request) {

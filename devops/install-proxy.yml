@@ -67,6 +67,7 @@
         export ZENFLOWS={{ zenflows }}
         export HERE_API={{ here_api }}
         export PORT={{ port }}
+        export INBOX={{ inbox }}
 
   - name: run proxy
     # become: true
@@ -77,15 +78,20 @@
       dest: "/etc/nginx/conf.d/{{ domain_name }}.conf"
       create: true
       block: |
+        # server {
+        # listen 80 default_server;
+        #
+        # server_name {{ domain_name }};
+        #
+        # return 301 https://$host$request_uri;
+        # }
         server {
           listen 443 ssl;
           root /var/www/html;
           server_name {{ domain_name }};
           ssl_certificate /etc/letsencrypt/live/{{ domain_name}}/fullchain.pem;
           ssl_certificate_key /etc/letsencrypt/live/{{ domain_name}}/privkey.pem;
-
-          include /etc/letsencrypt/options-ssl-nginx.conf;
-          # Redirect non-https traffic to https
+          include /etc/letsencrypt/options-ssl-nginx.conf; # Redirect non-https traffic to https
           if ($scheme != "https") {
               return 301 https://$host$request_uri;
           }
