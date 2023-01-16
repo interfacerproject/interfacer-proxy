@@ -1,11 +1,11 @@
-FROM golang:1.19-alpine3.16 AS builder
+FROM golang:1.19-bullseye AS builder
 
 ADD . /app
 WORKDIR /app
 
 RUN ENABLE_CGO=0 go build -o interfacer-gateway
 
-FROM alpine:3.16 AS worker
+FROM dyne/devuan:chimaera AS worker
 
 ARG PORT=8080
 ENV PORT=$PORT
@@ -16,7 +16,7 @@ ENV IFACER_LOG="/log"
 
 WORKDIR /app
 
-RUN addgroup -S "$USER" && adduser -SG "$USER" "$USER" && \
+RUN addgroup --system "$USER" && adduser --system --ingroup "$USER" "$USER" && \
     install -d -m 0755 -o "$USER" -g "$USER" /log
 
 COPY --from=builder /app/interfacer-gateway /app
