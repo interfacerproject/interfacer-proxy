@@ -12,11 +12,12 @@ ENV PORT=$PORT
 ARG USER=app
 ENV USER=$USER
 
+ENV IFACER_LOG="/log"
+
 WORKDIR /app
 
-RUN addgroup -S "$USER" && adduser -SG "$USER" "$USER"
-
-RUN mkdir -p /log
+RUN addgroup -S "$USER" && adduser -SG "$USER" "$USER" && \
+    install -d -m 0755 -o "$USER" -g "$USER" /log
 
 COPY --from=builder /app/interfacer-gateway /app
 
