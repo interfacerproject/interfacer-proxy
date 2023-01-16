@@ -16,6 +16,8 @@ WORKDIR /app
 
 RUN addgroup -S "$USER" && adduser -SG "$USER" "$USER"
 
+RUN mkdir -p /log
+
 COPY --from=builder /app/interfacer-gateway /app
 
 USER $USER
