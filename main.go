@@ -43,7 +43,7 @@ var proxiedHosts = []ProxiedHost{
 		name: "zenflows",
 		buildUrl: func(u *url.URL) *url.URL {
 			paths := strings.SplitN(strings.TrimPrefix(u.Path, "/"), "/", 2)
-			currentUrl, _ := url.Parse(os.Getenv("ZENFLOWS"))
+			currentUrl, _ := url.Parse(os.Getenv("ZENFLOWS_URL"))
 			currentUrl.Path = paths[1]
 			return currentUrl
 		},
