@@ -1,0 +1,3 @@
+---
+distribution: "{{ ansible_distribution | lower }}"
+request_dist: "{% if distribution == 'devuan' %}debian{% else %}{{ distribution }}{% endif %}"

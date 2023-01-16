@@ -1,0 +1,23 @@
+---
+- name: Create a directory if it does not exist
+  ansible.builtin.file:
+    path: "{{ ifacer_log }}"
+    state: directory
+    mode: '0755'
+    owner: root
+    group: root
+- name: Install package dependencies
+  ansible.builtin.package:
+    name:
+     - logrotate
+    state: latest
+- name: Logrotate config
+  blockinfile:
+    dest: "/{{ basedir }}/.env.{{ port }}"
+    create: true
+    block: |
+      {{ ifacer_log }}* {
+        size 100M
+        rotate 3
+        compress
+      }

@@ -1,0 +1,9 @@
+- name: check docker installed
+  shell: command -v docker>/dev/null && echo "DockerInstalled" || echo
+  register: docker_installed
+  changed_when: false
+- name: setup a server with docker
+  import_tasks: docker.yml
+  when: docker_installed.stdout != "DockerInstalled"
+- name: setup logs
+  import_tasks: logs.yml

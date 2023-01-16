@@ -1,0 +1,32 @@
+version: "3"
+services:
+  proxy:
+    image: ghcr.io/interfacerproject/interfacer-gateway:main
+    working_dir: /app
+    ports:
+      - "{{ port }}:80"
+    environment:
+      ZENFLOWS_URL: "{{ zenflows }}"
+      HERE_API: "{{ here_api }}"
+      PORT: 80
+      INBOX: "http://inbox"
+      IFACER_LOG: "/log"
+  inbox:
+    image: ghcr.io/interfacerproject/zenflows-inbox-tarantool:main
+    working_dir: /app
+    ports:
+      - "{{ inbox_port }}:80"
+    environment:
+      TT_HOST: "db:3500"
+      TT_USER: "inbox"
+      TT_PASS: "inbox"
+      ZENFLOWS_URL: {{ zenflows }}
+    depends_on:
+      - db
+  db:
+    image: "ghcr.io/interfacerproject/zenflows-inbox-tarantool-db:main"
+    restart: always
+    volumes:
+      - tt_data:/var/lib/tarantool
+volumes:
+  tt_data:

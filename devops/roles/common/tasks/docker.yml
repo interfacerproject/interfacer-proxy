@@ -1,0 +1,13 @@
+---
+- name: Create temporary download directory
+  ansible.builtin.tempfile:
+    state: directory
+    suffix: docker
+  register: tmpdir
+- name: Download docker setup
+  get_url:
+    url: https://get.docker.com
+    dest: "{{ tmpdir.path }}/get-docker.sh"
+
+- name: install docker
+  command: sh "{{ tmpdir.path }}/get-docker.sh"
