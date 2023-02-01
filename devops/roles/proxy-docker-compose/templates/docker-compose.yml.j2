@@ -10,6 +10,7 @@ services:
       HERE_API: "{{ here_api }}"
       PORT: 80
       INBOX: "http://inbox"
+      WALLET: "http://wallet"
       IFACER_LOG: "/log"
   inbox:
     image: ghcr.io/interfacerproject/zenflows-inbox-tarantool:main
@@ -17,16 +18,37 @@ services:
     ports:
       - "{{ inbox_port }}:80"
     environment:
-      TT_HOST: "db:3500"
+      TT_HOST: "db_inbox:3500"
       TT_USER: "inbox"
       TT_PASS: "inbox"
-      ZENFLOWS_URL: {{ zenflows }}
+      ZENFLOWS_URL: "{{ zenflows }}"
+      BASE_URL: "https://{{ domain_name }}/inbox"
+      ZENFLOWS_SK: "{{ zenflows_sk }}"
+      ZENFLOWS_USER: "{{ zenflows_user }}"
     depends_on:
-      - db
-  db:
+      - db_inbox
+  db_inbox:
     image: "ghcr.io/interfacerproject/zenflows-inbox-tarantool-db:main"
     restart: always
     volumes:
-      - tt_data:/var/lib/tarantool
+      - inbox_data:/var/lib/tarantool
+  wallet:
+    image: ghcr.io/interfacerproject/zenflows-wallet:main
+    working_dir: /app
+    ports:
+      - "{{ wallet_port }}:80"
+    environment:
+      TT_HOST: "db_wallet:3500"
+      TT_USER: "wallet"
+      TT_PASS: "wallet"
+      ZENFLOWS_URL: "{{ zenflows }}"
+    depends_on:
+      - db_inbox
+  db_wallet:
+    image: "ghcr.io/interfacerproject/zenflows-wallet-db:main"
+    restart: always
+    volumes:
+      - wallet_data:/var/lib/tarantool
 volumes:
-  tt_data:
+  wallet_data:
+  inbox_data:
