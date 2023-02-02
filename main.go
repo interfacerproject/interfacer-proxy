@@ -86,6 +86,14 @@ var proxiedHosts = []ProxiedHost{
 			return currentUrl
 		},
 	},
+	ProxiedHost{
+		name: "osh",
+		buildUrl: func(u *url.URL) *url.URL {
+			currentUrl, _ := url.Parse(os.Getenv("OSH"))
+			currentUrl.Path = u.Path[4:]
+			return currentUrl
+		},
+	},
 }
 
 func getRoot(w http.ResponseWriter, r *http.Request) {

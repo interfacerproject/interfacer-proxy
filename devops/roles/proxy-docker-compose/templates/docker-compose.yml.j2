@@ -11,6 +11,7 @@ services:
       PORT: 80
       INBOX: "http://inbox"
       WALLET: "http://wallet"
+      OSH: "http://osh/"
       IFACER_LOG: "/log"
   inbox:
     image: ghcr.io/interfacerproject/zenflows-inbox-tarantool:main
@@ -49,6 +50,11 @@ services:
     restart: always
     volumes:
       - wallet_data:/var/lib/tarantool
+  osh:
+    image: "ghcr.io/interfacerproject/zenflows-osh:master"
+    restart: always
+    environment:
+    	ADDR: ":80"
 volumes:
   wallet_data:
   inbox_data:
