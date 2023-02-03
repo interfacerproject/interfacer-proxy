@@ -174,12 +174,12 @@ func main() {
 
 	portStr := fmt.Sprintf(":%s", os.Getenv("PORT"))
 
-	fmt.Printf("Starting server on port %s\n", os.Getenv("PORT"))
+	fmt.Fprintf(os.Stderr, "starting server on port %q\n", os.Getenv("PORT"))
 	err := http.ListenAndServe(portStr, nil)
 	if errors.Is(err, http.ErrServerClosed) {
-		fmt.Printf("server closed\n")
+		fmt.Fprintln(os.Stderr, "server closed")
 	} else if err != nil {
-		fmt.Printf("error starting server: %s\n", err)
+		fmt.Fprintf(os.Stderr, "error starting server: %s\n", err.Error())
 		os.Exit(1)
 	}
 }
