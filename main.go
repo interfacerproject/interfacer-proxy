@@ -42,9 +42,8 @@ var proxiedHosts = []ProxiedHost{
 	ProxiedHost{
 		name: "zenflows",
 		buildUrl: func(u *url.URL) *url.URL {
-			paths := strings.SplitN(strings.TrimPrefix(u.Path, "/"), "/", 2)
 			currentUrl, _ := url.Parse(os.Getenv("ZENFLOWS_URL"))
-			currentUrl.Path = paths[1]
+			currentUrl.Path = u.Path[len("/zenflows"):]
 			return currentUrl
 		},
 	},
@@ -71,18 +70,16 @@ var proxiedHosts = []ProxiedHost{
 	ProxiedHost{
 		name: "inbox",
 		buildUrl: func(u *url.URL) *url.URL {
-			paths := strings.SplitN(strings.TrimPrefix(u.Path, "/"), "/", 2)
 			currentUrl, _ := url.Parse(os.Getenv("INBOX"))
-			currentUrl.Path = paths[1]
+			currentUrl.Path = u.Path[len("/inbox"):]
 			return currentUrl
 		},
 	},
 	ProxiedHost{
 		name: "wallet",
 		buildUrl: func(u *url.URL) *url.URL {
-			paths := strings.SplitN(strings.TrimPrefix(u.Path, "/"), "/", 2)
 			currentUrl, _ := url.Parse(os.Getenv("WALLET"))
-			currentUrl.Path = paths[1]
+			currentUrl.Path = u.Path[len("/wallet"):]
 			return currentUrl
 		},
 	},
@@ -90,7 +87,7 @@ var proxiedHosts = []ProxiedHost{
 		name: "osh",
 		buildUrl: func(u *url.URL) *url.URL {
 			currentUrl, _ := url.Parse(os.Getenv("OSH"))
-			currentUrl.Path = u.Path[4:]
+			currentUrl.Path = u.Path[len("/osh"):]
 			return currentUrl
 		},
 	},
