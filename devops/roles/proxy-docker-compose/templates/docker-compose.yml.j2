@@ -7,11 +7,11 @@ services:
       - "{{ port }}:80"
     environment:
       ZENFLOWS_URL: "{{ zenflows }}"
-      HERE_API: "{{ here_api }}"
-      PORT: 80
-      INBOX: "http://inbox"
-      WALLET: "http://wallet"
-      OSH: "http://osh/"
+      HERE_KEY: "{{ here_api }}"
+      ADDR: :80
+      INBOX_URL: "http://inbox"
+      WALLET_URL: "http://wallet"
+      OSH_URL: "http://osh/"
       IFACER_LOG: "/log"
   inbox:
     image: ghcr.io/interfacerproject/zenflows-inbox-tarantool:main
