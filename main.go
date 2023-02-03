@@ -10,7 +10,6 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"strings"
 	"time"
 )
 
@@ -94,11 +93,9 @@ var proxiedHosts = []ProxiedHost{
 }
 
 func getRoot(w http.ResponseWriter, r *http.Request) {
-	var result strings.Builder
 	for _, host := range proxiedHosts {
-		fmt.Fprintf(&result, "/%s/\n", host.name)
+		fmt.Fprintf(w, "/%s/\n", host.name)
 	}
-	io.WriteString(w, result.String())
 }
 
 func (p *ProxiedHost) proxyRequest(w http.ResponseWriter, r *http.Request) {
@@ -110,9 +107,8 @@ func (p *ProxiedHost) proxyRequest(w http.ResponseWriter, r *http.Request) {
 			"host":  r.RemoteAddr,
 			"error": err.Error(),
 		}).Error("client: could not create request")
-		msg := fmt.Sprintf("client: could not create request: %s\n", err)
 		w.WriteHeader(http.StatusServiceUnavailable)
-		w.Write([]byte(msg))
+		fmt.Fprintf(w, "client: could not create request: %s\n", err.Error())
 		return
 	}
 	req.Header = r.Header
@@ -129,9 +125,8 @@ func (p *ProxiedHost) proxyRequest(w http.ResponseWriter, r *http.Request) {
 			"host":  r.RemoteAddr,
 			"error": err.Error(),
 		}).Error("client: error making http request")
-		msg := fmt.Sprintf("client: error making http request: %s\n", err)
 		w.WriteHeader(http.StatusServiceUnavailable)
-		w.Write([]byte(msg))
+		fmt.Fprintf(w, "client: error making http request: %s\n", err.Error())
 		return
 	}
 	// Read all the headers
