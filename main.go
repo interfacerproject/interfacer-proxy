@@ -102,15 +102,6 @@ func getRoot(w http.ResponseWriter, r *http.Request) {
 }
 
 func (p *ProxiedHost) proxyRequest(w http.ResponseWriter, r *http.Request) {
-	// The request has the path /destination_name/desired_path
-	if !strings.HasPrefix(r.URL.Path, "/"+p.name+"/") {
-		logger.Log.WithFields(logrus.Fields{
-			"app":  p.name,
-			"host": r.RemoteAddr,
-		}).Error("wrong destination")
-		return
-	}
-
 	reqUrl := p.buildUrl(r.URL).String()
 	req, err := http.NewRequest(r.Method, reqUrl, r.Body)
 	if err != nil {
