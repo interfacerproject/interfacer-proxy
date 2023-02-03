@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"github.com/interfacerproject/interfacer-gateway/config"
 	"github.com/interfacerproject/interfacer-gateway/logger"
 	"github.com/sirupsen/logrus"
 	"io"
@@ -12,6 +13,8 @@ import (
 	"os"
 	"time"
 )
+
+var conf *config.Config
 
 const clientTimeout = 10 * time.Second
 
@@ -41,16 +44,14 @@ var proxiedHosts = []ProxiedHost{
 	ProxiedHost{
 		name: "zenflows",
 		buildUrl: func(u *url.URL) *url.URL {
-			currentUrl, _ := url.Parse(os.Getenv("ZENFLOWS_URL"))
-			currentUrl.Path = u.Path[len("/zenflows"):]
-			return currentUrl
+			return conf.ZenflowsURL.JoinPath(u.EscapedPath()[len("/zenflows"):])
 		},
 	},
 	ProxiedHost{
 		name: "location-autocomplete",
 		buildUrl: func(u *url.URL) *url.URL {
 			values := u.Query()
-			values.Add("apiKey", os.Getenv("HERE_API"))
+			values.Add("apiKey", conf.HereKey)
 			currentUrl, _ := url.Parse("https://autocomplete.search.hereapi.com/v1/autocomplete")
 			currentUrl.RawQuery = values.Encode()
 			return currentUrl
@@ -60,7 +61,7 @@ var proxiedHosts = []ProxiedHost{
 		name: "location-lookup",
 		buildUrl: func(u *url.URL) *url.URL {
 			values := u.Query()
-			values.Add("apiKey", os.Getenv("HERE_API"))
+			values.Add("apiKey", conf.HereKey)
 			currentUrl, _ := url.Parse("https://lookup.search.hereapi.com/v1/lookup")
 			currentUrl.RawQuery = values.Encode()
 			return currentUrl
@@ -69,25 +70,19 @@ var proxiedHosts = []ProxiedHost{
 	ProxiedHost{
 		name: "inbox",
 		buildUrl: func(u *url.URL) *url.URL {
-			currentUrl, _ := url.Parse(os.Getenv("INBOX"))
-			currentUrl.Path = u.Path[len("/inbox"):]
-			return currentUrl
+			return conf.InboxURL.JoinPath(u.EscapedPath()[len("/inbox"):])
 		},
 	},
 	ProxiedHost{
 		name: "wallet",
 		buildUrl: func(u *url.URL) *url.URL {
-			currentUrl, _ := url.Parse(os.Getenv("WALLET"))
-			currentUrl.Path = u.Path[len("/wallet"):]
-			return currentUrl
+			return conf.WalletURL.JoinPath(u.EscapedPath()[len("/wallet"):])
 		},
 	},
 	ProxiedHost{
 		name: "osh",
 		buildUrl: func(u *url.URL) *url.URL {
-			currentUrl, _ := url.Parse(os.Getenv("OSH"))
-			currentUrl.Path = u.Path[len("/osh"):]
-			return currentUrl
+			return conf.OSHURL.JoinPath(u.EscapedPath()[len("/osh"):])
 		},
 	},
 }
@@ -150,19 +145,25 @@ func (p *ProxiedHost) addHandle() (string, func(w http.ResponseWriter, r *http.R
 
 func main() {
 	logger.InitLog(os.Getenv("IFACER_LOG"))
+
+	var err error
+	conf, err = config.NewEnv()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "configs couldn't be loaded: %s\n", err.Error())
+		os.Exit(1)
+	}
+
 	http.HandleFunc("/", getRoot)
 	for i := 0; i < len(proxiedHosts); i++ {
 		http.HandleFunc(proxiedHosts[i].addHandle())
 	}
 
-	portStr := fmt.Sprintf(":%s", os.Getenv("PORT"))
-
-	fmt.Fprintf(os.Stderr, "starting server on port %q\n", os.Getenv("PORT"))
-	err := http.ListenAndServe(portStr, nil)
+	fmt.Fprintf(os.Stderr, "starting server on %s\n", conf.Addr)
+	err = http.ListenAndServe(conf.Addr, nil)
 	if errors.Is(err, http.ErrServerClosed) {
 		fmt.Fprintln(os.Stderr, "server closed")
 	} else if err != nil {
 		fmt.Fprintf(os.Stderr, "error starting server: %s\n", err.Error())
-		os.Exit(1)
+		os.Exit(2)
 	}
 }
