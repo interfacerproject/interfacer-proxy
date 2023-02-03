@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/interfacerproject/interfacer-gateway/logger"
-	logrus "github.com/sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 	"io"
 	"io/ioutil"
 	"net/http"

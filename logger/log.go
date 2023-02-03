@@ -3,7 +3,7 @@ package logger
 import (
     "os"
     "path/filepath"
-    logrus "github.com/sirupsen/logrus"
+    "github.com/sirupsen/logrus"
 )
 
 var Log = logrus.New()
