@@ -105,10 +105,10 @@ func (p *ProxiedHost) proxyRequest(w http.ResponseWriter, r *http.Request) {
 			"app":   p.name,
 			"host":  r.RemoteAddr,
 			"error": err.Error(),
-		}).Error("client: could not create request")
+		}).Error("client: could not create request: %s", err.Error())
 
 		w.WriteHeader(http.StatusServiceUnavailable)
-		fmt.Fprintf(w, "client: could not create request: %s\n", err.Error())
+		fmt.Fprintf(w, "client: could not create request\n")
 		return
 	}
 	req.Header = r.Header
@@ -124,7 +124,7 @@ func (p *ProxiedHost) proxyRequest(w http.ResponseWriter, r *http.Request) {
 			"app":   p.name,
 			"host":  r.RemoteAddr,
 			"error": err.Error(),
-		}).Error("client: error making http request")
+		}).Error("client: error making http request: %s", err.Error())
 
 		w.Header().Add("access-control-allow-origin", "*")
 		w.Header().Add("access-control-allow-credentials", "false")
@@ -132,7 +132,7 @@ func (p *ProxiedHost) proxyRequest(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("access-control-allow-headers", "*")
 
 		w.WriteHeader(http.StatusServiceUnavailable)
-		fmt.Fprintf(w, "client: error making http request: %s\n", err.Error())
+		fmt.Fprintf(w, "client: error making http request to %s\n", p.name)
 		return
 	}
 	// Read all the headers
