@@ -7,7 +7,6 @@ import (
 	"github.com/interfacerproject/interfacer-gateway/logger"
 	"github.com/sirupsen/logrus"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
@@ -114,7 +113,7 @@ func (p *ProxiedHost) proxyRequest(w http.ResponseWriter, r *http.Request) {
 	res, err := client.Do(req)
 	if res != nil && res.Body != nil {
 		defer func() {
-			io.Copy(ioutil.Discard, res.Body)
+			io.Copy(io.Discard, res.Body)
 			res.Body.Close()
 		}()
 	}
