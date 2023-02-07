@@ -104,7 +104,7 @@ func fetchURL(env string) (*url.URL, error) {
 		return nil, fmt.Errorf("%q is malformed: not a url", env)
 	}
 
-	if u.Scheme != "http" || u.Scheme == "https" {
+	if u.Scheme != "http" && u.Scheme != "https" {
 		return nil, fmt.Errorf("%q is malformed: invalid scheme; must be http(s)", env)
 	}
 

@@ -70,13 +70,17 @@ var proxiedHosts = []ProxiedHost{
 	ProxiedHost{
 		name: "inbox",
 		buildUrl: func(u *url.URL) *url.URL {
-			return conf.InboxURL.JoinPath(u.EscapedPath()[len("/inbox"):])
+			newurl := conf.InboxURL.JoinPath(u.EscapedPath()[len("/inbox"):])
+			newurl.RawQuery = u.RawQuery
+			return newurl
 		},
 	},
 	ProxiedHost{
 		name: "wallet",
 		buildUrl: func(u *url.URL) *url.URL {
-			return conf.WalletURL.JoinPath(u.EscapedPath()[len("/wallet"):])
+			newurl := conf.WalletURL.JoinPath(u.EscapedPath()[len("/wallet"):])
+			newurl.RawQuery = u.RawQuery
+			return newurl
 		},
 	},
 	ProxiedHost{

@@ -1,7 +1,7 @@
 version: "3"
 services:
   proxy:
-    image: ghcr.io/interfacerproject/interfacer-gateway:main
+    image: ghcr.io/interfacerproject/interfacer-proxy:latest
     working_dir: /app
     ports:
       - "{{ port }}:80"
@@ -13,8 +13,10 @@ services:
       WALLET_URL: "http://wallet"
       OSH_URL: "http://osh/"
       IFACER_LOG: "/log"
+    extra_hosts:
+      - "gateway0.interfacer.dyne.org:10.202.41.10"
   inbox:
-    image: ghcr.io/interfacerproject/zenflows-inbox-tarantool:main
+    image: ghcr.io/interfacerproject/zenflows-inbox:main
     working_dir: /app
     ports:
       - "{{ inbox_port }}:80"
@@ -28,13 +30,17 @@ services:
       ZENFLOWS_USER: "{{ zenflows_user }}"
     depends_on:
       - db_inbox
+    extra_hosts:
+      - "gateway0.interfacer.dyne.org:10.202.41.10"
   db_inbox:
-    image: "ghcr.io/interfacerproject/zenflows-inbox-tarantool-db:main"
+    image: "ghcr.io/interfacerproject/zenflows-inbox-db:main"
     restart: always
     volumes:
       - inbox_data:/var/lib/tarantool
+    extra_hosts:
+      - "gateway0.interfacer.dyne.org:10.202.41.10"
   wallet:
-    image: ghcr.io/interfacerproject/zenflows-wallet:main
+    image: ghcr.io/interfacerproject/zenflows-wallet:latest
     working_dir: /app
     ports:
       - "{{ wallet_port }}:80"
@@ -45,16 +51,22 @@ services:
       ZENFLOWS_URL: "{{ zenflows }}"
     depends_on:
       - db_inbox
+    extra_hosts:
+      - "gateway0.interfacer.dyne.org:10.202.41.10"
   db_wallet:
     image: "ghcr.io/interfacerproject/zenflows-wallet-db:main"
     restart: always
     volumes:
       - wallet_data:/var/lib/tarantool
+    extra_hosts:
+      - "gateway0.interfacer.dyne.org:10.202.41.10"
   osh:
     image: "ghcr.io/interfacerproject/zenflows-osh:master"
     restart: always
     environment:
-    	ADDR: ":80"
+      ADDR: ":80"
+    extra_hosts:
+      - "gateway0.interfacer.dyne.org:10.202.41.10"
 volumes:
   wallet_data:
   inbox_data:
