@@ -131,8 +131,13 @@ func (p *ProxiedHost) proxyRequest(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("access-control-allow-methods", "POST, GET, DELETE, PUT, OPTIONS, PATCH")
 		w.Header().Add("access-control-allow-headers", "*")
 
-		w.WriteHeader(http.StatusServiceUnavailable)
+		if c.Request.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusNoContent)
+		} else {
+			w.WriteHeader(http.StatusServiceUnavailable)
+		}
 		fmt.Fprintf(w, "client: error making http request to %s\n", p.name)
+
 		return
 	}
 	// Read all the headers
