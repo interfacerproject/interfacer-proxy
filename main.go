@@ -99,12 +99,14 @@ func getRoot(w http.ResponseWriter, r *http.Request) {
 func (p *ProxiedHost) proxyRequest(w http.ResponseWriter, r *http.Request) {
 	reqUrl := p.buildUrl(r.URL).String()
 	req, err := http.NewRequest(r.Method, reqUrl, r.Body)
+	// Can't really fail due to method, url, and the body are provided by the std lib.
 	if err != nil {
 		logger.Log.WithFields(logrus.Fields{
 			"app":   p.name,
 			"host":  r.RemoteAddr,
 			"error": err.Error(),
 		}).Error("client: could not create request")
+
 		w.WriteHeader(http.StatusServiceUnavailable)
 		fmt.Fprintf(w, "client: could not create request: %s\n", err.Error())
 		return
@@ -123,6 +125,12 @@ func (p *ProxiedHost) proxyRequest(w http.ResponseWriter, r *http.Request) {
 			"host":  r.RemoteAddr,
 			"error": err.Error(),
 		}).Error("client: error making http request")
+
+		w.Header().Add("access-control-allow-origin", "*")
+		w.Header().Add("access-control-allow-credentials", "false")
+		w.Header().Add("access-control-allow-methods", "POST, GET, DELETE, PUT, OPTIONS, PATCH")
+		w.Header().Add("access-control-allow-headers", "*")
+
 		w.WriteHeader(http.StatusServiceUnavailable)
 		fmt.Fprintf(w, "client: error making http request: %s\n", err.Error())
 		return
