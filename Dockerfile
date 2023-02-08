@@ -5,9 +5,13 @@
 FROM golang:1.19-bullseye AS builder
 
 WORKDIR /app
-COPY . .
 
+COPY go.mod go.sum ./
+RUN go mod download && go mod verify
+
+COPY . .
 RUN ENABLE_CGO=0 go build -o interfacer-proxy .
+
 
 FROM dyne/devuan:chimaera AS worker
 
