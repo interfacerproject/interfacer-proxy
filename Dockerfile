@@ -2,7 +2,8 @@
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
-FROM golang:1.19-bullseye AS builder
+ARG GOVER=1.18
+FROM golang:$GOVER-bullseye AS builder
 
 WORKDIR /app
 
