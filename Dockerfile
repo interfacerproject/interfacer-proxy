@@ -2,29 +2,31 @@
 #
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
-FROM golang:1.19-alpine3.17 AS builder
+FROM golang:1.19-bullseye AS builder
 
+ADD . /app
 WORKDIR /app
-ADD . .
 
-RUN ENABLE_CGO=0 go build -o interfacer-gateway .
+RUN ENABLE_CGO=0 go build -o interfacer-gateway
 
-FROM alpine:3.17
-
-ARG USER=zenflows GROUP=zenflows
-RUN addgroup -S "$GROUP" && adduser -SG"$GROUP" "$USER"
-
-ENV IFACER_LOG="/log"
-RUN install -d -m 0755 -o "$USER" -g "$GROUP" "$IFACER_LOG"
-
-USER "$USER"
+FROM dyne/devuan:chimaera AS worker
 
 ARG PORT=8080
 ENV PORT=$PORT
-EXPOSE $PORT
+ARG USER=app
+ENV USER=$USER
+
+ENV IFACER_LOG="/log"
 
 WORKDIR /app
 
-COPY --from=builder --chown="$USER:$GROUP" /app/interfacer-gateway .
+RUN addgroup --system "$USER" && adduser --system --ingroup "$USER" "$USER" && \
+    install -d -m 0755 -o "$USER" -g "$USER" /log
 
-CMD ["./interfacer-gateway"]
+COPY --from=builder /app/interfacer-gateway /app
+
+USER $USER
+
+EXPOSE $PORT
+
+CMD ["/app/interfacer-gateway"]
