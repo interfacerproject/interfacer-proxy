@@ -95,6 +95,17 @@ var proxiedHosts = []ProxiedHost{
 }
 
 func getRoot(w http.ResponseWriter, r *http.Request) {
+	w.Header().Add("access-control-allow-origin", "*")
+	w.Header().Add("access-control-allow-credentials", "false")
+	w.Header().Add("access-control-allow-methods", "POST, GET, DELETE, PUT, OPTIONS, PATCH")
+	w.Header().Add("access-control-allow-headers", "*")
+
+	if r.Method == "OPTIONS" {
+		w.WriteHeader(http.StatusNoContent)
+	} else {
+		w.WriteHeader(http.StatusOK)
+	}
+
 	for _, host := range proxiedHosts {
 		fmt.Fprintf(w, "/%s/\n", host.name)
 	}
