@@ -5,7 +5,7 @@
 FROM golang:1.19-bullseye AS builder
 
 WORKDIR /app
-ADD . .
+COPY . .
 
 RUN ENABLE_CGO=0 go build -o interfacer-proxy .
 
