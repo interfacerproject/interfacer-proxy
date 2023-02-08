@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2023 Dyne.org foundation
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 - name: check docker installed
   shell: command -v docker>/dev/null && echo "DockerInstalled" || echo
   register: docker_installed

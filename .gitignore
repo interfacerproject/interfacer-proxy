@@ -1,2 +1,10 @@
+# SPDX-FileCopyrightText: 2023 Dyne.org foundation
+#
+# SPDX-License-Identifier: CC0-1.0
+
 .env
-devops/hosts.yaml
+/devops/hosts.yaml
+/devops/sshkey
+/devops/sshkey.pub
+/interfacer-proxy
+/interfacer-gateway

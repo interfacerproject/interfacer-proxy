@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2023 Dyne.org foundation
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 # This workflow uses actions that are not certified by GitHub.
 # They are provided by a third-party and are governed by
 # separate terms of service, privacy policy, and support
@@ -11,7 +15,7 @@ name: Create and publish a Docker image
 
 on:
   push:
-    branches: ['srfsh/refactor']
+    branches: ['main']
 
 jobs:
   publish_docker_image:

@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2023 Dyne.org foundation
+#
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 ---
 distribution: "{{ ansible_distribution | lower }}"
 request_dist: "{% if distribution == 'devuan' %}debian{% else %}{{ distribution }}{% endif %}"

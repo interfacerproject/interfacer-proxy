@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2023 Dyne.org foundation
+//
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 module github.com/interfacerproject/interfacer-gateway
 
 go 1.18
