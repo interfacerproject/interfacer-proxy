@@ -56,7 +56,7 @@ implementation installed (GNU make(1) works), you can just run:
 
 	make
 
-which builds a the service as the executable named `zosh`.
+which builds a the service as the executable named `interfacer-gateway`.
 
 
 ### Building from source with Docker
