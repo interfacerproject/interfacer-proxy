@@ -4,10 +4,10 @@
 
 FROM golang:1.19-bullseye AS builder
 
-ADD . /app
 WORKDIR /app
+ADD . .
 
-RUN ENABLE_CGO=0 go build -o interfacer-gateway
+RUN ENABLE_CGO=0 go build -o interfacer-proxy .
 
 FROM dyne/devuan:chimaera AS worker
 
@@ -18,15 +18,15 @@ ENV USER=$USER
 
 ENV IFACER_LOG="/log"
 
+RUN addgroup --system "$USER" && adduser --system --ingroup "$USER" "$USER" && \
+      install -d -m 0755 -o "$USER" -g "$USER" /log
+
 WORKDIR /app
 
-RUN addgroup --system "$USER" && adduser --system --ingroup "$USER" "$USER" && \
-    install -d -m 0755 -o "$USER" -g "$USER" /log
-
-COPY --from=builder /app/interfacer-gateway /app
+COPY --from=builder /app/interfacer-proxy .
 
 USER $USER
 
 EXPOSE $PORT
 
-CMD ["/app/interfacer-gateway"]
+CMD ["./interfacer-proxy"]
