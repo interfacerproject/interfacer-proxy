@@ -14,7 +14,6 @@ FROM dyne/devuan:chimaera AS worker
 ARG PORT=8080
 ENV ADDR=:$PORT
 ARG USER=app
-ENV USER=$USER
 
 ENV IFACER_LOG="/log"
 
