@@ -12,7 +12,7 @@ RUN ENABLE_CGO=0 go build -o interfacer-proxy .
 FROM dyne/devuan:chimaera AS worker
 
 ARG PORT=8080
-ENV PORT=$PORT
+ENV ADDR=:$PORT
 ARG USER=app
 ENV USER=$USER
 
