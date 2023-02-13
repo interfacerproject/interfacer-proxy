@@ -4,6 +4,7 @@
 
 ARG GOVER=1.18
 FROM golang:$GOVER-bullseye AS builder
+ENV GONOPROXY=
 
 WORKDIR /app
 
