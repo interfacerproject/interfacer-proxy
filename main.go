@@ -132,7 +132,7 @@ func (p *ProxiedHost) proxyRequest(w http.ResponseWriter, r *http.Request) {
 			"app":   p.name,
 			"host":  r.RemoteAddr,
 			"error": err.Error(),
-		}).Error("client: could not create request: %s", err.Error())
+		}).Errorf("client: could not create request: %s", err.Error())
 
 		w.WriteHeader(http.StatusServiceUnavailable)
 		fmt.Fprintf(w, "client: could not create request\n")
@@ -151,7 +151,7 @@ func (p *ProxiedHost) proxyRequest(w http.ResponseWriter, r *http.Request) {
 			"app":   p.name,
 			"host":  r.RemoteAddr,
 			"error": err.Error(),
-		}).Error("client: error making http request: %s", err.Error())
+		}).Errorf("client: error making http request: %s", err.Error())
 
 		w.Header().Add("access-control-allow-origin", "*")
 		w.Header().Add("access-control-allow-credentials", "false")
