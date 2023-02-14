@@ -23,6 +23,7 @@ import (
 	"github.com/interfacerproject/interfacer-gateway/logger"
 	"github.com/sirupsen/logrus"
 	"io"
+	"net"
 	"net/http"
 	"net/url"
 	"os"
@@ -32,6 +33,21 @@ import (
 var conf *config.Config
 
 const clientTimeout = 10 * time.Second
+
+var dialer = &net.Dialer{
+	Timeout:   30 * time.Second,
+	KeepAlive: 30 * time.Second,
+}
+var transport = &http.Transport{
+	DisableKeepAlives:     true,
+	Proxy:                 http.ProxyFromEnvironment,
+	DialContext:           dialer.DialContext,
+	ForceAttemptHTTP2:     true,
+	MaxIdleConns:          100,
+	IdleConnTimeout:       90 * time.Second,
+	TLSHandshakeTimeout:   10 * time.Second,
+	ExpectContinueTimeout: 1 * time.Second,
+}
 
 // from https://pkg.go.dev/net/http#pkg-overview
 // Clients and Transports are safe for concurrent use by multiple goroutines
