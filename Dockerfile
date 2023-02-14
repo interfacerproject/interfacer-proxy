@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-ARG GOVER=1.18
+ARG GOVER=1.19
 FROM golang:$GOVER-bullseye AS builder
 ENV GONOPROXY=
 
@@ -24,7 +24,7 @@ COPY go.mod go.sum ./
 RUN go mod download && go mod verify
 
 COPY . .
-RUN ENABLE_CGO=0 go build -o interfacer-proxy .
+RUN ENABLE_CGO=0 go build -o interfacer-proxy
 
 
 FROM dyne/devuan:chimaera
