@@ -139,41 +139,33 @@ func (p *ProxiedHost) proxyRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	req.Header = r.Header
-	maxRetry := 3
-	var res *http.Response = nil
-	for i := 0; ; i = i + 1 {
-		var err error
-		res, err = client.Do(req)
-		if err == nil {
-			break
-		}
-		if err != nil && i == maxRetry {
-			logger.Log.WithFields(logrus.Fields{
-				"app":   p.name,
-				"host":  r.RemoteAddr,
-				"error": err.Error(),
-			}).Errorf("client: error making http request: %s", err.Error())
-
-			w.Header().Add("access-control-allow-origin", "*")
-			w.Header().Add("access-control-allow-credentials", "false")
-			w.Header().Add("access-control-allow-methods", "POST, GET, DELETE, PUT, OPTIONS, PATCH")
-			w.Header().Add("access-control-allow-headers", "*")
-
-			if r.Method == "OPTIONS" {
-				w.WriteHeader(http.StatusNoContent)
-			} else {
-				w.WriteHeader(http.StatusServiceUnavailable)
-			}
-			fmt.Fprintf(w, "client: error making http request to %s\n", p.name)
-
-			return
-		}
-	}
+	res, err := client.Do(req)
 	if res != nil && res.Body != nil {
 		defer func() {
 			io.Copy(io.Discard, res.Body)
 			res.Body.Close()
 		}()
+	}
+	if err != nil {
+		logger.Log.WithFields(logrus.Fields{
+			"app":   p.name,
+			"host":  r.RemoteAddr,
+			"error": err.Error(),
+		}).Errorf("client: error making http request: %s", err.Error())
+
+		w.Header().Add("access-control-allow-origin", "*")
+		w.Header().Add("access-control-allow-credentials", "false")
+		w.Header().Add("access-control-allow-methods", "POST, GET, DELETE, PUT, OPTIONS, PATCH")
+		w.Header().Add("access-control-allow-headers", "*")
+
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusNoContent)
+		} else {
+			w.WriteHeader(http.StatusServiceUnavailable)
+		}
+		fmt.Fprintf(w, "client: error making http request to %s\n", p.name)
+
+		return
 	}
 	// Read all the headers
 	for name, headers := range res.Header {
