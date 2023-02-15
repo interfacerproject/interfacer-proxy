@@ -140,9 +140,24 @@ services:
 As mentioned above, the environment variables are described on the
 section "Configuration".
 
-### TODO: Using the Ansible scripts
+### Using the Ansible scripts
 
-Alberto should describe it.
+Deployment (most of the times) can be done using IaC with Ansible.
+The deployment use docker-compose with a template that groups all the services required.
+It can be starte writing the `hosts.yaml` and running `make install` inside the `devops` directory.
+
+In the `hosts.yaml` one has to provide:
+ - `domain_name`: the FQDN of the server
+ - `zenflows`: URL for the zenflows instanc3
+ - `ifacer_log`: directory in which we want to save the logs
+ - `port`: port for proxy on `localhost`
+ - `here_api`: URL for the API of here.com
+ - `inbox_port`: port for inbox on `localhost`
+ - `wallet_port`: port for wallet on `localhost`
+ - `zenflows_sk`: secret key for a user in zenflows
+ - `zenflows_user`: username of the same user in zenflows
+
+Warning: currently we are deploying in a LAN with private address, so you may need to modify `docker-compose.yaml.j2`
 
 
 ## Configuration
