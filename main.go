@@ -17,6 +17,7 @@
 package main
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"github.com/interfacerproject/interfacer-gateway/config"
@@ -140,25 +141,40 @@ func getRoot(w http.ResponseWriter, r *http.Request) {
 }
 
 func (p *ProxiedHost) proxyRequest(w http.ResponseWriter, r *http.Request) {
-	reqUrl := p.buildUrl(r.URL).String()
-	req, err := http.NewRequest(r.Method, reqUrl, r.Body)
-	// Can't really fail due to method, url, and the body are provided by the std lib.
+	var err error
+	saveBody, err := io.ReadAll(r.Body)
 	if err != nil {
 		logger.Log.WithFields(logrus.Fields{
 			"app":   p.name,
 			"host":  r.RemoteAddr,
 			"error": err.Error(),
-		}).Errorf("client: could not create request: %s", err.Error())
+		}).Errorf("client: could not read body of request: %s", err.Error())
 
 		w.WriteHeader(http.StatusServiceUnavailable)
-		fmt.Fprintf(w, "client: could not create request\n")
+		fmt.Fprintf(w, "client: could not read body of request\n")
 		return
 	}
-	req.Header = r.Header
 	maxRetry := 3
 	var res *http.Response = nil
+
+	reqUrl := p.buildUrl(r.URL).String()
+
 	for i := 0; ; i = i + 1 {
-		var err error
+
+		req, err := http.NewRequest(r.Method, reqUrl, bytes.NewReader(saveBody))
+		// Can't really fail due to method, url, and the body are provided by the std lib.
+		if err != nil {
+			logger.Log.WithFields(logrus.Fields{
+				"app":   p.name,
+				"host":  r.RemoteAddr,
+				"error": err.Error(),
+			}).Errorf("client: could not create request: %s", err.Error())
+
+			w.WriteHeader(http.StatusServiceUnavailable)
+			fmt.Fprintf(w, "client: could not create request\n")
+			return
+		}
+		req.Header = r.Header
 		res, err = client.Do(req)
 		if err == nil {
 			break
