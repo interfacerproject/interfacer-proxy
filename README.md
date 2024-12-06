@@ -144,7 +144,7 @@ section "Configuration".
 
 Deployment (most of the times) can be done using IaC with Ansible.
 The deployment use docker-compose with a template that groups all the services required.
-It can be starte writing the `hosts.yaml` and running `make install` inside the `devops` directory.
+It can be started writing the `hosts.yaml` and running `make install` inside the `devops` directory.
 
 In the `hosts.yaml` one has to provide:
  - `domain_name`: the FQDN of the server
