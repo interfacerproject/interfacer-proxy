@@ -85,6 +85,7 @@ which will name the image "interfacer-gateway".  Then, you can run:
 
 	docker run --rm -p PORT:8080 \
 		-e ZENFLOWS_URL=http://url-to-zenflows-instance \
+    -e INTERFACER_DPP_URL=http://url-to-interfacer-dpp-instance \
 		-e INBOX_URL=http://url-to-inbox-instance \
 		-e WALLET_URL=http://url-to-wallet-instance \
 		-e OSH_URL=http://url-to-osh-instance \
@@ -105,6 +106,7 @@ To use that image, you can run:
 
 	docker run --rm -p PORT:8080 \
 		-e ZENFLOWS_URL=http://url-to-zenflows-instance \
+    -e INTERFACER_DPP_URL=http://url-to-interfacer-dpp-instance \
 		-e INBOX_URL=http://url-to-inbox-instance \
 		-e WALLET_URL=http://url-to-wallet-instance \
 		-e OSH_URL=http://url-to-osh-instance \
@@ -129,6 +131,7 @@ services:
       - 3000:8080
     environment:
       ZENFLOWS_URL: http://url-to-zenflows-instance
+      INTERFACER_DPP_URL: http://url-to-interfacer-dpp-instance
       INBOX_URL: http://url-to-inbox-instance
       WALLET_URL: http://url-to-wallet-instance
       OSH_URL: http://url-to-osh-instance
@@ -168,6 +171,9 @@ Here is the list of them:
 
 * `ZENFLOWS_URL` - the URL of
   [the zenflows instance](https://github.com/interfacerproject/zenflows)
+  to which the requests will be proxied;
+* `INTERFACER_DPP_URL` - the URL of
+  [the interfacer-dpp instance](https://github.com/interfacerproject/interfacer-dpp)
   to which the requests will be proxied;
 * `INBOX_URL` - the URL of
   [the zenflows-inbox instance](https://github.com/interfacerproject/zenflows-inbox)

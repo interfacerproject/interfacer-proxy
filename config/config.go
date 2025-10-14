@@ -45,6 +45,11 @@ type Config struct {
 	// https://github.com/interfacerproject/zenflows-wallet
 	WalletURL *url.URL
 
+	// InterfacerDPPURL is the URL of the interfacer-dpp instance to
+	// which we proxy request.  More on that at the project page:
+	// https://github.com/interfacerproject/interfacer-dpp
+	InterfacerDPPURL *url.URL
+
 	// OSHURL is the URL of the zenflows-osh instance to which
 	// we proxy request.  More on that at the project page:
 	// https://github.com/interfacerproject/zenflows-osh
@@ -88,6 +93,12 @@ func NewEnv() (*Config, error) {
 		return nil, err
 	}
 	c.WalletURL = u
+
+	u, err = fetchURL("INTERFACER_DPP_URL")
+	if err != nil {
+		return nil, err
+	}
+	c.InterfacerDPPURL = u
 
 	u, err = fetchURL("OSH_URL")
 	if err != nil {
