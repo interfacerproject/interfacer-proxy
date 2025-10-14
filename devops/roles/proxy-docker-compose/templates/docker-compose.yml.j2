@@ -27,6 +27,7 @@ services:
       ADDR: :80
       INBOX_URL: "http://inbox"
       WALLET_URL: "http://wallet"
+      INTERFACER_DPP_URL: "http://interfacer-dpp"
       OSH_URL: "http://osh/"
       IFACER_LOG: "/log"
     extra_hosts:
@@ -76,13 +77,32 @@ services:
       - wallet_data:/var/lib/tarantool
     extra_hosts:
       - "gateway0.interfacer.dyne.org:10.202.41.10"
-  osh:
-    image: "ghcr.io/interfacerproject/zenflows-osh:master"
-    restart: always
+  mongodb:
+    image: mongo:latest
+    container_name: dpp-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - dpp-network
+
+  interfacer-dpp:
+    image: ghcr.io/interfacerproject/interfacer-dpp:main
+    container_name: interfacer-dpp
+    ports:
+      - "8080:8080"
     environment:
-      ADDR: ":80"
-    extra_hosts:
-      - "gateway0.interfacer.dyne.org:10.202.41.10"
+      - MONGODB_URI=mongodb://mongodb:27017
+    depends_on:
+      - mongodb
+    networks:
+      - dpp-network
 volumes:
   wallet_data:
   inbox_data:
+  mongodb_data:
+
+networks:
+  dpp-network:
+    driver: bridge
