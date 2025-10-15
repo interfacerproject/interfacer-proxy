@@ -121,6 +121,12 @@ var proxiedHosts = []ProxiedHost{
 			return conf.OSHURL.JoinPath(u.EscapedPath()[len("/osh"):])
 		},
 	},
+	ProxiedHost{
+		name: "interfacer-dpp",
+		buildUrl: func(u *url.URL) *url.URL {
+			return conf.InterfacerDPPURL.JoinPath(u.EscapedPath()[len("/interfacer-dpp"):])
+		},
+	},
 }
 
 func getRoot(w http.ResponseWriter, r *http.Request) {
