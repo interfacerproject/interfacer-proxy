@@ -152,7 +152,7 @@ It can be started writing the `hosts.yaml` and running `make install` inside the
 In the `hosts.yaml` one has to provide:
  - `domain_name`: the FQDN of the server
  - `zenflows`: URL for the zenflows instanc3
- - `ifacer_log`: directory in which we want to save the logs
+ - `ifacer_log`: path to the log file
  - `port`: port for proxy on `localhost`
  - `here_api`: URL for the API of here.com
  - `inbox_port`: port for inbox on `localhost`

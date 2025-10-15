@@ -20,15 +20,17 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"github.com/interfacerproject/interfacer-gateway/config"
-	"github.com/interfacerproject/interfacer-gateway/logger"
-	"github.com/sirupsen/logrus"
 	"io"
+	"log"
 	"net"
 	"net/http"
 	"net/url"
 	"os"
 	"time"
+
+	"github.com/interfacerproject/interfacer-gateway/config"
+	"github.com/interfacerproject/interfacer-gateway/logger"
+	"github.com/sirupsen/logrus"
 )
 
 var conf *config.Config
@@ -233,7 +235,12 @@ func (p *ProxiedHost) addHandle() (string, func(w http.ResponseWriter, r *http.R
 }
 
 func main() {
-	logger.InitLog(os.Getenv("IFACER_LOG"))
+	logFile, ok := os.LookupEnv("IFACER_LOG")
+	if !ok {
+		log.Printf(`"IFACER_LOG" was not provided; defaulting to "proxy.log"`)
+		logFile = "proxy.log"
+	}
+	logger.InitLog(logFile)
 
 	var err error
 	conf, err = config.NewEnv()

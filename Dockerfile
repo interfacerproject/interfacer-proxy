@@ -33,14 +33,14 @@ ARG PORT=8080
 ENV ADDR=:$PORT
 ARG USER=app
 
-ENV IFACER_LOG="/log"
+ENV IFACER_LOG="/app/proxy.log"
 
-RUN addgroup --system "$USER" && adduser --system --ingroup "$USER" "$USER" && \
-      install -d -m 0755 -o "$USER" -g "$USER" /log
+RUN addgroup --system "$USER" && adduser --system --ingroup "$USER" "$USER"
 
 WORKDIR /app
 
 COPY --from=builder /app/interfacer-proxy .
+RUN chown app:app /app/interfacer-proxy
 
 USER $USER
 
