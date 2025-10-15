@@ -27,7 +27,7 @@ services:
       ADDR: :80
       INBOX_URL: "http://inbox"
       WALLET_URL: "http://wallet"
-      INTERFACER_DPP_URL: "http://interfacer-dpp"
+      INTERFACER_DPP_URL: "http://interfacer-dpp:8080"
       OSH_URL: "http://osh/"
       IFACER_LOG: "/log"
     extra_hosts:
@@ -84,9 +84,6 @@ services:
       - "27017:27017"
     volumes:
       - mongodb_data:/data/db
-    networks:
-      - dpp-network
-
   interfacer-dpp:
     image: ghcr.io/interfacerproject/interfacer-dpp:main
     container_name: interfacer-dpp
@@ -96,13 +93,7 @@ services:
       - MONGODB_URI=mongodb://mongodb:27017
     depends_on:
       - mongodb
-    networks:
-      - dpp-network
 volumes:
   wallet_data:
   inbox_data:
   mongodb_data:
-
-networks:
-  dpp-network:
-    driver: bridge
