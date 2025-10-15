@@ -17,7 +17,7 @@
 ---
 - name: Create a directory if it does not exist
   ansible.builtin.file:
-    path: "{{ ifacer_log }}"
+    path: "{{ ifacer_log | dirname }}"
     state: directory
     mode: '0755'
     owner: root
@@ -32,7 +32,7 @@
     dest: "/{{ basedir }}/.env.{{ port }}"
     create: true
     block: |
-      {{ ifacer_log }}* {
+      {{ ifacer_log }} {
         size 100M
         rotate 3
         compress

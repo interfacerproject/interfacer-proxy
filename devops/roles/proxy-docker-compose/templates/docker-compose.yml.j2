@@ -29,7 +29,9 @@ services:
       WALLET_URL: "http://wallet"
       INTERFACER_DPP_URL: "http://interfacer-dpp:8080"
       OSH_URL: "http://osh/"
-      IFACER_LOG: "/log"
+      IFACER_LOG: "/app/proxy.log"
+    volumes:
+      - "{{ ifacer_log | dirname }}:/app"
     extra_hosts:
       - "gateway0.interfacer.dyne.org:10.202.41.10"
   inbox:
