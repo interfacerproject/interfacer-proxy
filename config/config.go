@@ -55,9 +55,11 @@ type Config struct {
 	// https://github.com/interfacerproject/zenflows-osh
 	OSHURL *url.URL
 
-	// The opaque API key of here.com.  More on that at:
-	// https://developer.here.com/documentation
-	HereKey string
+	// NominatimURL is the base URL of the Nominatim instance used
+	// for location search and lookup.  Defaults to the public
+	// instance at https://nominatim.openstreetmap.org when
+	// NOMINATIM_URL is not set.
+	NominatimURL *url.URL
 }
 
 // NewEnv() fetches configuration options from the environment.  If
@@ -106,11 +108,18 @@ func NewEnv() (*Config, error) {
 	}
 	c.OSHURL = u
 
-	s = os.Getenv("HERE_KEY")
+	s = os.Getenv("NOMINATIM_URL")
 	if s == "" {
-		return nil, errors.New(`"HERE_KEY" must be provided`)
+		s = "https://nominatim.openstreetmap.org"
 	}
-	c.HereKey = s
+	u, err = url.Parse(s)
+	if err != nil || u.Scheme == "" || u.Host == "" {
+		return nil, errors.New(`"NOMINATIM_URL" is malformed`)
+	}
+	if u.Scheme != "http" && u.Scheme != "https" {
+		return nil, errors.New(`"NOMINATIM_URL" is malformed: invalid scheme; must be http(s)`)
+	}
+	c.NominatimURL = &url.URL{Scheme: u.Scheme, Host: u.Host, Path: "/"}
 
 	return c, nil
 }

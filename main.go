@@ -20,15 +20,16 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"github.com/interfacerproject/interfacer-gateway/config"
-	"github.com/interfacerproject/interfacer-gateway/logger"
-	"github.com/sirupsen/logrus"
 	"io"
 	"net"
 	"net/http"
 	"net/url"
 	"os"
 	"time"
+
+	"github.com/interfacerproject/interfacer-gateway/config"
+	"github.com/interfacerproject/interfacer-gateway/logger"
+	"github.com/sirupsen/logrus"
 )
 
 var conf *config.Config
@@ -82,20 +83,16 @@ var proxiedHosts = []ProxiedHost{
 	ProxiedHost{
 		name: "location-autocomplete",
 		buildUrl: func(u *url.URL) *url.URL {
-			values := u.Query()
-			values.Add("apiKey", conf.HereKey)
-			currentUrl, _ := url.Parse("https://autocomplete.search.hereapi.com/v1/autocomplete")
-			currentUrl.RawQuery = values.Encode()
+			currentUrl := conf.NominatimURL.JoinPath("/search")
+			currentUrl.RawQuery = u.RawQuery
 			return currentUrl
 		},
 	},
 	ProxiedHost{
 		name: "location-lookup",
 		buildUrl: func(u *url.URL) *url.URL {
-			values := u.Query()
-			values.Add("apiKey", conf.HereKey)
-			currentUrl, _ := url.Parse("https://lookup.search.hereapi.com/v1/lookup")
-			currentUrl.RawQuery = values.Encode()
+			currentUrl := conf.NominatimURL.JoinPath("/lookup")
+			currentUrl.RawQuery = u.RawQuery
 			return currentUrl
 		},
 	},

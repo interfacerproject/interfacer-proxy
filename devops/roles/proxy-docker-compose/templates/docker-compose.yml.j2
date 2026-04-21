@@ -23,7 +23,7 @@ services:
       - "{{ port }}:80"
     environment:
       ZENFLOWS_URL: "{{ zenflows }}"
-      HERE_KEY: "{{ here_api }}"
+      NOMINATIM_URL: "{{ nominatim_url | default('https://nominatim.openstreetmap.org') }}"
       ADDR: :80
       INBOX_URL: "http://inbox"
       WALLET_URL: "http://wallet"
