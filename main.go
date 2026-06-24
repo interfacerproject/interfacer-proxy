@@ -115,13 +115,17 @@ var proxiedHosts = []ProxiedHost{
 	ProxiedHost{
 		name: "osh",
 		buildUrl: func(u *url.URL) *url.URL {
-			return conf.OSHURL.JoinPath(u.EscapedPath()[len("/osh"):])
+			newurl := conf.OSHURL.JoinPath(u.EscapedPath()[len("/osh"):])
+			newurl.RawQuery = u.RawQuery
+			return newurl
 		},
 	},
 	ProxiedHost{
 		name: "interfacer-dpp",
 		buildUrl: func(u *url.URL) *url.URL {
-			return conf.InterfacerDPPURL.JoinPath(u.EscapedPath()[len("/interfacer-dpp"):])
+			newurl := conf.InterfacerDPPURL.JoinPath(u.EscapedPath()[len("/interfacer-dpp"):])
+			newurl.RawQuery = u.RawQuery
+			return newurl
 		},
 	},
 }
